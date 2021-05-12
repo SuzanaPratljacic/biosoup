@@ -41,7 +41,7 @@ TEST(BiosoupNucleicAcidTest, Quality) {
   NucleicAcid s{
       "test",
       "ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTAC",  // NOLINT
-      "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"};  // NOLINT
+      "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 64};  // NOLINT
   EXPECT_EQ(s.block_quality.size(), s.block_quality.capacity());
   EXPECT_EQ(31, s.Score(42));
   EXPECT_EQ(78, s.Score(84));
@@ -55,15 +55,25 @@ TEST(BiosoupNucleicAcidTest, Quality) {
   EXPECT_EQ("", s.InflateQuality(95));
 }
 
+TEST(BiosoupNucleicAcidTest, QualityBlockSize) {
+  NucleicAcid s{
+      "test",
+      "ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTAC",  // NOLINT
+      "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 1};  // NOLINT
+  EXPECT_EQ(s.block_quality.size(), s.block_quality.capacity());
+  EXPECT_EQ("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", s.InflateQuality());  // NOLINT
+}
+
 TEST(BiosoupNucleicAcidTest, ReverseAndComplement) {
   NucleicAcid s{
       "test",
       "ACGTACTGAGCTAGTCATCGATGCCAGTCATGCGATCGTACTAGCTGAGACTGATCGCATGCTAGTACGTCA",  // NOLINT
-      "0123456789012345678901234567890123456789012345678901234567890123ZZZZZZZZ"};  // NOLINT
+      "0123456789012345678901234567890123456789012345678901234567890123ZZZZZZZZ",64};  // NOLINT
   NucleicAcid c{s};
   c.ReverseAndComplement();
   EXPECT_EQ("TGACGTACTAGCATGCGATCAGTCTCAGCTAGTACGATCGCATGACTGGCATCGATGACTAGCTCAGTACGT", c.InflateData());  // NOLINT
   EXPECT_EQ("ZZZZZZZZ4444444444444444444444444444444444444444444444444444444444444444", c.InflateQuality());  // NOLINT
+  std::cout << c.InflateQuality();
   c.ReverseAndComplement();
   EXPECT_EQ(c.InflateData(), s.InflateData());
   EXPECT_EQ(c.InflateQuality(), s.InflateQuality());
