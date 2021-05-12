@@ -10,6 +10,7 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <assert.h>
 
 namespace biosoup {
 
@@ -75,22 +76,29 @@ class NucleicAcid {
   NucleicAcid(
       const std::string& name,
       const std::string& data,
-      const std::string& quality)
+      const std::string& quality,
+      std::uint32_t quality_block_size_)
       : NucleicAcid(
           name.c_str(), name.size(),
           data.c_str(), data.size(),
-          quality.c_str(), quality.size()) {}
+          quality.c_str(), quality.size(),
+          quality_block_size_) {}
 
   NucleicAcid(
       const char* name, std::uint32_t name_len,
       const char* data, std::uint32_t data_len,
-      const char* quality, std::uint32_t quality_len)
+      const char* quality, std::uint32_t quality_len,
+      std::uint32_t quality_block_size_)
       : NucleicAcid(
           name, name_len,
           data, data_len) {
-    block_quality.reserve(quality_len / 64. + .999);
-    for (std::uint32_t i = 0; i < quality_len; i += 64) {
-      std::uint32_t j = std::min(i + 64, quality_len);
+
+    quality_block_size = quality_block_size_;
+    assert(quality_block_size > 0);
+    block_quality.reserve(static_cast<double>(quality_len) / quality_block_size + .999);
+
+    for (std::uint32_t i = 0; i < quality_len; i += quality_block_size) {
+      std::uint32_t j = std::min(i + quality_block_size, quality_len);
       auto block = std::accumulate(
           quality + i,
           quality + j,
@@ -116,6 +124,7 @@ class NucleicAcid {
       i = inflated_len - i - 1;
       x = 3;
     }
+    //i >> 5 the block in which the value is stored, one block contains 32 nucleotides
     return ((deflated_data[i >> 5] >> ((i << 1) & 63)) & 3) ^ x;
   }
 
@@ -123,7 +132,7 @@ class NucleicAcid {
     if (is_reverse_complement) {
       i = inflated_len - i - 1;
     }
-    return block_quality[i >> 6];
+    return block_quality[i % quality_block_size];
   }
 
   std::string InflateData(std::uint32_t i = 0, std::uint32_t len = -1) const {
@@ -164,6 +173,7 @@ class NucleicAcid {
   std::string name;
   std::vector<std::uint64_t> deflated_data;
   std::vector<std::uint8_t> block_quality;  // (optional) Phred quality scores
+  std::uint32_t quality_block_size;
   std::uint32_t inflated_len;
   bool is_reverse_complement;
 };
