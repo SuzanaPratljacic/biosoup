@@ -55,6 +55,15 @@ TEST(BiosoupNucleicAcidTest, Quality) {
   EXPECT_EQ("", s.InflateQuality(95));
 }
 
+TEST(BiosoupNucleicAcidTest, QualityBlockSize) {
+  NucleicAcid s{
+      "test",
+      "ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTAC",  // NOLINT
+      "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 1};  // NOLINT
+  EXPECT_EQ(s.block_quality.size(), s.block_quality.capacity());
+  EXPECT_EQ("!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", s.InflateQuality());  // NOLINT
+}
+
 TEST(BiosoupNucleicAcidTest, ReverseAndComplement) {
   NucleicAcid s{
       "test",
@@ -64,6 +73,7 @@ TEST(BiosoupNucleicAcidTest, ReverseAndComplement) {
   c.ReverseAndComplement();
   EXPECT_EQ("TGACGTACTAGCATGCGATCAGTCTCAGCTAGTACGATCGCATGACTGGCATCGATGACTAGCTCAGTACGT", c.InflateData());  // NOLINT
   EXPECT_EQ("ZZZZZZZZ4444444444444444444444444444444444444444444444444444444444444444", c.InflateQuality());  // NOLINT
+  std::cout << c.InflateQuality();
   c.ReverseAndComplement();
   EXPECT_EQ(c.InflateData(), s.InflateData());
   EXPECT_EQ(c.InflateQuality(), s.InflateQuality());

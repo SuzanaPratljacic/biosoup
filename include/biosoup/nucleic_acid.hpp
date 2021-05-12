@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <vector>
 #include <assert.h>
+#include <math.h> 
 
 namespace biosoup {
 
@@ -133,7 +134,7 @@ class NucleicAcid {
     if (is_reverse_complement) {
       i = inflated_len - i - 1;
     }
-    return block_quality[i % quality_block_size];
+    return block_quality[static_cast<int>(floor(i / quality_block_size))];
   }
 
   std::string InflateData(std::uint32_t i = 0, std::uint32_t len = -1) const {
