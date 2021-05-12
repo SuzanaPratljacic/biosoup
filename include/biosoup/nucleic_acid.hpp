@@ -57,6 +57,7 @@ class NucleicAcid {
         block_quality(),
         inflated_len(data_len),
         is_reverse_complement(0) {
+
     deflated_data.reserve(data_len / 32. + .999);
     std::uint64_t block = 0;
     for (std::uint32_t i = 0; i < data_len; ++i) {
