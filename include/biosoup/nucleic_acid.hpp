@@ -38,6 +38,8 @@ constexpr static char kNucleotideDecoder[] = {
     'A', 'C', 'G', 'T'
 };
 
+constexpr std::uint32_t const QUALITY_BLOCK_SIZE = 1;
+
 class NucleicAcid {
  public:
   NucleicAcid() = default;
@@ -79,7 +81,7 @@ class NucleicAcid {
       const std::string& name,
       const std::string& data,
       const std::string& quality,
-      std::uint32_t quality_block_size_)
+      std::uint32_t quality_block_size_=QUALITY_BLOCK_SIZE)
       : NucleicAcid(
           name.c_str(), name.size(),
           data.c_str(), data.size(),
@@ -90,7 +92,7 @@ class NucleicAcid {
       const char* name, std::uint32_t name_len,
       const char* data, std::uint32_t data_len,
       const char* quality, std::uint32_t quality_len,
-      std::uint32_t quality_block_size_)
+      std::uint32_t quality_block_size_=QUALITY_BLOCK_SIZE)
       : NucleicAcid(
           name, name_len,
           data, data_len) {
