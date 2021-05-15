@@ -122,6 +122,14 @@ class NucleicAcid {
 
   ~NucleicAcid() = default;
 
+  std::uint64_t operator[] (int index){
+    return Code(index);
+  }
+
+  std::uint32_t size (){
+    return inflated_len;
+  }
+
   std::uint64_t Code(std::uint32_t i) const {
     std::uint64_t x = 0;
     if (is_reverse_complement) {
