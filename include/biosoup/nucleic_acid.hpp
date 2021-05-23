@@ -179,6 +179,14 @@ class NucleicAcid {
     is_reverse_complement ^= 1;
   }
 
+  std::uint32_t Id(){
+    return id;
+  }
+
+  std::string Name(){
+    return name;
+  }
+
   static std::atomic<std::uint32_t> num_objects;
 
   std::uint32_t id;  // (optional) initialize num_objects to 0
